@@ -1,8 +1,8 @@
 function getComputerChoice() {
   const value = Math.random();
-  if (value <= 0.33) return "rock";
-  else if (value <= 0.66) return "paper";
-  else return "scissors";
+  if (value <= 0.33) return "Rock";
+  else if (value <= 0.66) return "Paper";
+  else return "Scissors";
 }
 
 function getHumanChoice() {
@@ -20,15 +20,15 @@ function toTitleCase(str) {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
 
+const winConditions = {
+  Rock: "Scissors",
+  Paper: "Rock",
+  Scissors: "Paper",
+};
+
 function decideIfHumanWin(humanChoice, computerChoice) {
   if (humanChoice === computerChoice) return -1;
-  if (
-    (humanChoice === "Rock" && computerChoice === "Scissors") ||
-    (humanChoice === "Paper" && computerChoice === "Rock") ||
-    (humanChoice === "Scissors" && computerChoice === "Paper")
-  )
-    return 1;
-  else return 0;
+  return winConditions[humanChoice] === computerChoice ? 1 : 0;
 }
 
 let humanScore = 0;
