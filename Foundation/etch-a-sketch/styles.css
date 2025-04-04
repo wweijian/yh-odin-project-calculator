@@ -1,0 +1,15 @@
+#main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+#container {
+  flex: auto;
+  border: 5px solid;
+}
+
+.row {
+  display: flex;
+}
