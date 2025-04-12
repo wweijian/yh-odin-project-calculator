@@ -9,7 +9,7 @@ const valueText = document.querySelector(".value-text");
 let operator;
 let operand1;
 let operand2;
-let startNewValue = true;
+let enteredNewValue = false;
 
 const MAX_CHAR_ALLOWED = 9;
 
@@ -18,7 +18,7 @@ function clear() {
   operator = undefined;
   operand1 = undefined;
   operand2 = undefined;
-  startNewValue = true;
+  enteredNewValue = false;
 }
 
 function toggleSign() {
@@ -29,28 +29,31 @@ function toggleSign() {
 }
 
 function addDecimal() {
-  if (!valueText.textContent.includes(".")) updateDisplay(".");
+  if (!enteredNewValue || valueText.textContent === "0") updateDisplay("0.");
+  else if (!valueText.textContent.includes(".")) updateDisplay(".");
 }
 
 function updateDisplay(buttonText) {
-  if (startNewValue || valueText.textContent === "0") {
+  if (!enteredNewValue || valueText.textContent === "0") {
     valueText.textContent = buttonText;
-    startNewValue = false;
+    enteredNewValue = true;
   } else if (valueText.textContent.length < MAX_CHAR_ALLOWED) {
     valueText.textContent += buttonText;
   }
 }
 
-function setOperator() {
-  if (startNewValue || !operator) {
+function setOperator(inputOperator) {
+  /*
+  Prevent clicking on operator causing calculation to be executed when no value
+  has been entered and set value for operand 1 when operator is undefined
+  */
+  if (!enteredNewValue || !operator) {
     operand1 = !valueText.textContent.includes(".")
       ? parseInt(valueText.textContent)
       : parseFloat(valueText.textContent);
-  } else {
-    calculate();
-  }
-  operator = this.textContent;
-  startNewValue = true;
+  } else calculate();
+  operator = inputOperator;
+  enteredNewValue = false;
 }
 
 function add() {
@@ -106,7 +109,12 @@ function showResult() {
   if (operator) calculate();
   operator = undefined;
   operand2 = undefined;
-  startNewValue = true;
+  enteredNewValue = false;
+}
+
+function clearLastDigit() {
+  if (valueText.textContent.length === 1) valueText.textContent = "0";
+  else valueText.textContent = valueText.textContent.slice(0, -1);
 }
 
 clearButton.addEventListener("click", clear);
@@ -119,5 +127,16 @@ numButtonList.forEach((numButton) => {
   );
 });
 operatorButtonList.forEach((operatorButton) => {
-  operatorButton.addEventListener("click", setOperator);
+  operatorButton.addEventListener("click", () =>
+    setOperator(operatorButton.textContent)
+  );
+});
+window.addEventListener("keydown", (e) => {
+  const enteredKey = e.key;
+  if (enteredKey >= "0" && enteredKey <= "9") updateDisplay(enteredKey);
+  else if (enteredKey === ".") addDecimal();
+  else if (["+", "-", "*", "/", "%"].includes(enteredKey))
+    setOperator(enteredKey);
+  else if (enteredKey === "=") showResult();
+  else if (enteredKey === "Backspace") clearLastDigit();
 });
